@@ -4,7 +4,12 @@ import tempfile
 from typing import List, Optional, Tuple
 
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, TextLoader
+from langchain_community.document_loaders import (
+    PyPDFLoader,
+    Docx2txtLoader,
+    TextLoader,
+    UnstructuredWordDocumentLoader,
+)
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 
@@ -45,10 +50,13 @@ def load_docs_from_files(files) -> List:
         if ext == "pdf":
             loader = PyPDFLoader(tmp_path)
             docs.extend(loader.load())
-        elif ext in ("docx", "doc"):
+        elif ext == "docx":
             loader = Docx2txtLoader(tmp_path)
             docs.extend(loader.load())
-        elif ext in ("txt",):
+        elif ext == "doc":
+            loader = UnstructuredWordDocumentLoader(tmp_path)
+            docs.extend(loader.load())
+        elif ext == "txt":
             loader = TextLoader(tmp_path, encoding="utf-8")
             docs.extend(loader.load())
         else:
